@@ -1,24 +1,11 @@
 /**
  * lib/insights.ts
- * ─────────────────────────────────────────────────────────────────────────────
  * Insight engine — transforms raw Birdeye data into actionable signals.
- * Pure functions, no side effects, no API calls.
  */
 
 import type { TokenSignal, TokenInsight, WalletAnalysis, WalletHolding } from "@/types";
 
 export type { TokenSignal, TokenInsight, WalletAnalysis };
-
-// ─── Token Signal ─────────────────────────────────────────────────────────────
-
-interface SignalInput {
-  volume24hChangePercent?: number;
-  volumeChangePercent?: number;
-  rank?: number;
-  liquidity?: number;
-  securityScore?: number;
-  isNew?: boolean;
-}
 
 const SIGNAL_CONFIG: Record<TokenSignal, { emoji: string; label: string; color: string }> = {
   HOT:     { emoji: "🔥", label: "HOT",     color: "text-orange-400 bg-orange-400/10 border-orange-400/30" },
@@ -27,23 +14,43 @@ const SIGNAL_CONFIG: Record<TokenSignal, { emoji: string; label: string; color: 
   NEUTRAL: { emoji: "➖", label: "NEUTRAL", color: "text-gray-400 bg-gray-400/10 border-gray-400/30" },
 };
 
-export function getTokenSignal(token: SignalInput): TokenInsight {
-  const volChange = token.volume24hChangePercent ?? token.volumeChangePercent ?? 0;
-  const { rank, liquidity, securityScore, isNew } = token;
+interface SignalInput {
+  volume24hUSD?: number;
+  volume24hChangePercent?: number;
+  volumeChangePercent?: number;
+  priceChange24hPercent?: number;
+  liquidity?: number;
+  rank?: number;
+  securityScore?: number;
+  isNew?: boolean;
+}
 
-  // 🔥 HOT: strong volume momentum + good rank
-  if (volChange > 50 && (rank === undefined || rank <= 50)) {
+export function getTokenSignal(token: SignalInput): TokenInsight {
+  const volume = token.volume24hUSD ?? 0;
+  const liquidity = token.liquidity ?? 0;
+  const priceChange = token.priceChange24hPercent ?? 0;
+  const volChange = token.volume24hChangePercent ?? token.volumeChangePercent ?? 0;
+  const { rank, securityScore, isNew } = token;
+
+  // 🔥 HOT: strong volume + liquidity + positive price action
+  if (
+    (volume > 1_000_000 && liquidity > 500_000 && priceChange > 0) ||
+    (volChange > 50 && (rank === undefined || rank <= 30) && priceChange > 0)
+  ) {
     return { signal: "HOT", ...SIGNAL_CONFIG.HOT };
   }
 
-  // ⚠️ RISK: low liquidity or poor security score
-  if ((liquidity !== undefined && liquidity < 10_000) ||
-      (securityScore !== undefined && securityScore < 30)) {
+  // ⚠️ RISK: low liquidity, big dump, or poor security
+  if (
+    liquidity < 50_000 ||
+    priceChange < -20 ||
+    (securityScore !== undefined && securityScore < 30)
+  ) {
     return { signal: "RISK", ...SIGNAL_CONFIG.RISK };
   }
 
-  // 👀 WATCH: newly listed or moderate growth
-  if (isNew || (volChange > 10 && volChange <= 50)) {
+  // 👀 WATCH: new listing or moderate momentum
+  if (isNew || volChange > 10 || (priceChange > 5 && volume > 100_000)) {
     return { signal: "WATCH", ...SIGNAL_CONFIG.WATCH };
   }
 
@@ -84,9 +91,7 @@ export function analyzeWallet(
   const opportunityScore = Math.min(
     100,
     Math.round(
-      ((trendingAddresses.size - hotTokens.length) /
-        Math.max(trendingAddresses.size, 1)) *
-        100
+      ((trendingAddresses.size - hotTokens.length) / Math.max(trendingAddresses.size, 1)) * 100
     )
   );
 
@@ -102,13 +107,5 @@ export function analyzeWallet(
   if (suggestions.length === 0)
     suggestions.push("📊 Portfolio looks balanced. Keep monitoring for new opportunities.");
 
-  return {
-    totalTokens: total,
-    riskScore,
-    exposureScore,
-    opportunityScore,
-    hotTokens,
-    riskyTokens,
-    suggestions,
-  };
+  return { totalTokens: total, riskScore, exposureScore, opportunityScore, hotTokens, riskyTokens, suggestions };
 }

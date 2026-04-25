@@ -23,7 +23,9 @@ export default function TokenCard({
   volumeChangePercent,
 }: TokenCardProps) {
   const insight = getTokenSignal({
-    volume24hChangePercent: volumeChangePercent,
+    volume24hUSD,
+    volumeChangePercent,
+    priceChange24hPercent,
     rank,
     liquidity,
     isNew,
@@ -33,7 +35,7 @@ export default function TokenCard({
 
   return (
     <Link href={`/token/${address}`} className="block group">
-      <div className="bg-gray-900 border border-white/10 rounded-xl p-4 hover:border-cyan-500/40 hover:bg-gray-800/80 transition-all h-full">
+      <div className="bg-gray-900 border border-white/10 rounded-xl p-4 hover:border-cyan-500/40 hover:bg-gray-800/60 hover:shadow-lg hover:shadow-cyan-500/5 transition-all duration-200 h-full cursor-pointer">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2 min-w-0">
@@ -54,25 +56,35 @@ export default function TokenCard({
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
             <span className="text-gray-500 text-xs">Price</span>
-            <span className="text-white text-sm font-mono">{formatPrice(price)}</span>
+            <span className="text-white text-sm font-mono">
+              {price ? formatPrice(price) : "N/A"}
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500 text-xs">24h</span>
             <span className={`text-sm flex items-center gap-0.5 ${changeColor(priceChange24hPercent)}`}>
-              {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-              {priceChange24hPercent !== undefined
-                ? `${Math.abs(priceChange24hPercent).toFixed(2)}%`
-                : "—"}
+              {priceChange24hPercent !== undefined ? (
+                <>
+                  {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                  {`${priceChange24hPercent >= 0 ? "+" : ""}${priceChange24hPercent.toFixed(2)}%`}
+                </>
+              ) : (
+                <span className="text-gray-600">N/A</span>
+              )}
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-500 text-xs">Volume</span>
-            <span className="text-gray-300 text-xs font-mono">{formatNumber(volume24hUSD, "$")}</span>
+            <span className="text-gray-300 text-xs font-mono">
+              {volume24hUSD ? formatNumber(volume24hUSD, "$") : "N/A"}
+            </span>
           </div>
           {liquidity !== undefined && (
             <div className="flex justify-between items-center">
               <span className="text-gray-500 text-xs">Liquidity</span>
-              <span className="text-gray-300 text-xs font-mono">{formatNumber(liquidity, "$")}</span>
+              <span className="text-gray-300 text-xs font-mono">
+                {liquidity > 0 ? formatNumber(liquidity, "$") : "N/A"}
+              </span>
             </div>
           )}
           {volumeChangePercent !== undefined && (

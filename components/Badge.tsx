@@ -6,10 +6,10 @@ interface BadgeProps {
 }
 
 const CONFIG: Record<TokenSignal, { emoji: string; label: string; color: string }> = {
-  HOT:     { emoji: "🔥", label: "HOT",     color: "text-orange-400 bg-orange-400/10 border-orange-400/30" },
-  RISK:    { emoji: "⚠️", label: "RISK",    color: "text-red-400 bg-red-400/10 border-red-400/30" },
-  WATCH:   { emoji: "👀", label: "WATCH",   color: "text-yellow-400 bg-yellow-400/10 border-yellow-400/30" },
-  NEUTRAL: { emoji: "➖", label: "NEUTRAL", color: "text-gray-400 bg-gray-400/10 border-gray-400/30" },
+  HOT:     { emoji: "🔥", label: "HOT",     color: "bg-orange-500/20 text-orange-300 border-orange-500/40" },
+  RISK:    { emoji: "⚠️", label: "RISK",    color: "bg-red-500/20 text-red-300 border-red-500/40" },
+  WATCH:   { emoji: "👀", label: "WATCH",   color: "bg-blue-500/20 text-blue-300 border-blue-500/40" },
+  NEUTRAL: { emoji: "➖", label: "NEUTRAL", color: "bg-gray-500/10 text-gray-400 border-gray-500/20" },
 };
 
 export default function Badge({ signal, size = "sm" }: BadgeProps) {

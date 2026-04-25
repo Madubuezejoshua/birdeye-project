@@ -39,23 +39,52 @@ async function birdeyeFetch(
 
 // ─── Endpoints ────────────────────────────────────────────────────────────────
 
+// Normalize raw Birdeye token fields to our BirdeyeToken shape
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeToken(t: any) {
+  return {
+    address: t.address,
+    symbol: t.symbol,
+    name: t.name,
+    decimals: t.decimals,
+    logoURI: t.logoURI,
+    rank: t.rank,
+    price: t.price ?? t.v24hUSD ?? 0,
+    priceChange24hPercent: t.priceChange24hPercent ?? t.priceChange24h ?? t.price_change_24h ?? 0,
+    volume24hUSD: t.volume24hUSD ?? t.v24hUSD ?? t.volume24h ?? t.volume ?? 0,
+    volumeChangePercent: t.volumeChangePercent ?? t.v24hChangePercent ?? t.volume_change_24h ?? 0,
+    liquidity: t.liquidity ?? t.mc ?? 0,
+    marketCap: t.marketCap ?? t.mc ?? 0,
+  };
+}
+
 /** GET /defi/token_trending — top trending tokens by rank */
 export async function getTrendingTokens(limit = 20) {
-  return birdeyeFetch("/defi/token_trending", {
+  const res = await birdeyeFetch("/defi/token_trending", {
     sort_by: "rank",
     sort_type: "asc",
     offset: "0",
     limit: String(limit),
   });
+  console.log("[birdeye] Trending raw sample:", res?.data?.tokens?.[0]);
+  if (res?.data?.tokens) {
+    res.data.tokens = res.data.tokens.map(normalizeToken);
+  }
+  return res;
 }
 
 /** GET /defi/v2/tokens/new_listing — recently listed tokens */
 export async function getNewListings(limit = 20) {
-  return birdeyeFetch(
+  const res = await birdeyeFetch(
     "/defi/v2/tokens/new_listing",
     { limit: String(limit), meme_platform_enabled: "false" },
     60
   );
+  console.log("[birdeye] New listings raw sample:", res?.data?.items?.[0]);
+  if (res?.data?.items) {
+    res.data.items = res.data.items.map(normalizeToken);
+  }
+  return res;
 }
 
 /** GET /defi/token_security — security analysis for a token */

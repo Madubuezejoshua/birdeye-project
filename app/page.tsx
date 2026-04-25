@@ -30,7 +30,13 @@ export default async function DashboardPage() {
   const { trending, listings } = await getData();
 
   const hot = trending
-    .filter((t) => getTokenSignal({ volume24hChangePercent: t.volumeChangePercent, rank: t.rank, liquidity: t.liquidity }).signal === "HOT")
+    .filter((t) => getTokenSignal({
+      volume24hUSD: t.volume24hUSD,
+      volumeChangePercent: t.volumeChangePercent,
+      priceChange24hPercent: t.priceChange24hPercent,
+      rank: t.rank,
+      liquidity: t.liquidity,
+    }).signal === "HOT")
     .slice(0, 4);
 
   const stats = [

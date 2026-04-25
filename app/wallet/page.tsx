@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import WalletInsights from "@/components/WalletInsights";
-import { Loader } from "@/components/Loader";
+import Loader from "@/components/Loader";
 import { formatNumber, shortenAddress } from "@/lib/utils";
 import { Wallet, Search, ExternalLink } from "lucide-react";
 import Link from "next/link";
