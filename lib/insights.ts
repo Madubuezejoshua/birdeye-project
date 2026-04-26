@@ -11,7 +11,6 @@ const SIGNAL_CONFIG: Record<TokenSignal, { emoji: string; label: string; color: 
   HOT:     { emoji: "🔥", label: "HOT",     color: "text-orange-400 bg-orange-400/10 border-orange-400/30" },
   RISK:    { emoji: "⚠️", label: "RISK",    color: "text-red-400 bg-red-400/10 border-red-400/30" },
   WATCH:   { emoji: "👀", label: "WATCH",   color: "text-yellow-400 bg-yellow-400/10 border-yellow-400/30" },
-  NEUTRAL: { emoji: "➖", label: "NEUTRAL", color: "text-gray-400 bg-gray-400/10 border-gray-400/30" },
 };
 
 interface SignalInput {
@@ -32,29 +31,18 @@ export function getTokenSignal(token: SignalInput): TokenInsight {
   const volChange = token.volume24hChangePercent ?? token.volumeChangePercent ?? 0;
   const { rank, securityScore, isNew } = token;
 
-  // 🔥 HOT: strong volume + liquidity + positive price action
-  if (
-    (volume > 1_000_000 && liquidity > 500_000 && priceChange > 0) ||
-    (volChange > 50 && (rank === undefined || rank <= 30) && priceChange > 0)
-  ) {
+  // 🔥 HOT: strong activity + good liquidity
+  if (volume > 500_000 && liquidity > 200_000) {
     return { signal: "HOT", ...SIGNAL_CONFIG.HOT };
   }
 
-  // ⚠️ RISK: low liquidity, big dump, or poor security
-  if (
-    liquidity < 50_000 ||
-    priceChange < -20 ||
-    (securityScore !== undefined && securityScore < 30)
-  ) {
+  // ⚠️ RISK: low liquidity
+  if (liquidity < 50_000) {
     return { signal: "RISK", ...SIGNAL_CONFIG.RISK };
   }
 
-  // 👀 WATCH: new listing or moderate momentum
-  if (isNew || volChange > 10 || (priceChange > 5 && volume > 100_000)) {
-    return { signal: "WATCH", ...SIGNAL_CONFIG.WATCH };
-  }
-
-  return { signal: "NEUTRAL", ...SIGNAL_CONFIG.NEUTRAL };
+  // 👀 WATCH: everything else
+  return { signal: "WATCH", ...SIGNAL_CONFIG.WATCH };
 }
 
 // ─── Wallet Analysis ──────────────────────────────────────────────────────────

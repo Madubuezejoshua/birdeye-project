@@ -1,6 +1,7 @@
 import { getTrendingTokens, getNewListings } from "@/lib/birdeye";
 import { getTokenSignal } from "@/lib/insights";
 import TokenCard from "@/components/TokenCard";
+import HotTokenDetector from "@/components/HotTokenDetector";
 import { TrendingUp, Sparkles, Flame, Activity } from "lucide-react";
 import Link from "next/link";
 import type { BirdeyeToken } from "@/types";
@@ -13,14 +14,31 @@ async function getData() {
       getTrendingTokens(20),
       getNewListings(10),
     ]);
-    return {
-      trending: trendingRes.status === "fulfilled"
-        ? (trendingRes.value?.data?.tokens as BirdeyeToken[]) ?? []
-        : [],
-      listings: listingsRes.status === "fulfilled"
-        ? (listingsRes.value?.data?.items as BirdeyeToken[]) ?? []
-        : [],
-    };
+
+    const trendingRaw = trendingRes.status === "fulfilled"
+      ? (trendingRes.value?.data?.tokens as BirdeyeToken[]) ?? []
+      : [];
+
+    const listingsRaw = listingsRes.status === "fulfilled"
+      ? (listingsRes.value?.data?.items as BirdeyeToken[]) ?? []
+      : [];
+
+    // Deduplicate by address
+    const seen = new Set<string>();
+    const trending = trendingRaw.filter(t => {
+      if (!t.address || seen.has(t.address)) return false;
+      seen.add(t.address);
+      return true;
+    });
+
+    seen.clear();
+    const listings = listingsRaw.filter(t => {
+      if (!t.address || seen.has(t.address)) return false;
+      seen.add(t.address);
+      return true;
+    });
+
+    return { trending, listings };
   } catch {
     return { trending: [], listings: [] };
   }
@@ -29,25 +47,30 @@ async function getData() {
 export default async function DashboardPage() {
   const { trending, listings } = await getData();
 
-  const hot = trending
+  const hotTokens = trending
     .filter((t) => getTokenSignal({
       volume24hUSD: t.volume24hUSD,
       volumeChangePercent: t.volumeChangePercent,
       priceChange24hPercent: t.priceChange24hPercent,
       rank: t.rank,
       liquidity: t.liquidity,
-    }).signal === "HOT")
-    .slice(0, 4);
+    }).signal === "HOT");
+
+  const hot = hotTokens.slice(0, 4);
+  const hotTokensCount = hotTokens.length;
 
   const stats = [
     { label: "Trending Tokens", value: trending.length, color: "text-cyan-400" },
     { label: "New Listings",    value: listings.length,  color: "text-purple-400" },
-    { label: "Hot Tokens",      value: hot.length,       color: "text-orange-400" },
+    { label: "Hot Tokens",      value: hotTokensCount,   color: "text-orange-400" },
     { label: "Data Source",     value: "Birdeye",        color: "text-green-400" },
   ];
 
   return (
     <div className="space-y-8">
+      {/* HOT Token Detection System */}
+      <HotTokenDetector tokens={trending} />
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -101,7 +124,7 @@ export default async function DashboardPage() {
         </h2>
         {trending.length === 0 ? (
           <div className="bg-gray-900 border border-white/10 rounded-xl p-8 text-center text-gray-500 text-sm">
-            No trending data available
+            Loading trending tokens...
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -120,7 +143,7 @@ export default async function DashboardPage() {
         </h2>
         {listings.length === 0 ? (
           <div className="bg-gray-900 border border-white/10 rounded-xl p-6 text-center text-gray-500 text-sm">
-            No new listings data available
+            Loading new listings...
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">

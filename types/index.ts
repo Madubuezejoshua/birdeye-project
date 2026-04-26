@@ -9,10 +9,18 @@ export interface BirdeyeToken {
   priceChange24hPercent?: number;
   volume24hUSD?: number;
   volumeChangePercent?: number;
+  volumeDelta?: number;
   liquidity?: number;
   marketCap?: number;
   rank?: number;
   logoURI?: string;
+  // Extended fields for safe display
+  isValid?: boolean;
+  hasPrice?: boolean;
+  hasVolume?: boolean;
+  hasLiquidity?: boolean;
+  displayName?: string;
+  displaySymbol?: string;
 }
 
 export interface BirdeyeTokenOverview extends BirdeyeToken {
@@ -60,7 +68,7 @@ export interface WalletHolding {
 
 // ─── Insight Engine Types ─────────────────────────────────────────────────────
 
-export type TokenSignal = "HOT" | "RISK" | "WATCH" | "NEUTRAL";
+export type TokenSignal = "HOT" | "RISK" | "WATCH";
 
 export interface TokenInsight {
   signal: TokenSignal;
