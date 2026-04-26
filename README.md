@@ -1,61 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Birdeye Intelligence Dashboard
 
-## Birdeye Intelligence Dashboard
+A real-time Solana crypto intelligence dashboard built with Next.js 15, powered by the Birdeye API. Tracks trending tokens, analyzes wallets, detects HOT/RISK/WATCH signals, and sends live Telegram alerts.
 
-A real-time crypto trading signal dashboard powered by Birdeye API with intelligent HOT token alerts.
+---
 
-### Features
+## Features
 
-- 🔥 **HOT Token Detection**: Automatically identifies high-volume, high-liquidity tokens
-- 📱 **Real-time Alerts**: Telegram and email notifications for new HOT tokens
-- 📊 **Signal Intelligence**: WATCH, HOT, and RISK classifications
-- 💰 **Live Market Data**: Real-time prices, volume, and liquidity data
-- 🔍 **Token Analysis**: Detailed security scores and market metrics
+- **Live Market Dashboard** — trending tokens, new listings, HOT/RISK/WATCH signal classification
+- **Wallet Analyzer** — enter any Solana wallet to get portfolio value, risk score, opportunity score, and smart suggestions
+- **Token Detail Pages** — price history chart, security analysis, liquidity, volume, and holder data
+- **Real-time Alert Engine** — auto-detects HOT tokens every 60 seconds and fires Telegram notifications
+- **Smart Money Detection** — tags wallets as Whale, Smart Money, or Trend Follower based on holdings
+- **Token Heat Score** — 0–100 score per token based on volume, liquidity, and price momentum
 
-### Alert System Setup
+---
 
-1. **Telegram Alerts** (Recommended):
-   - Your bot token is already configured: `8592780330:AAHB4L2cDqS4xMN0gq3sAwBbOBufk53oOn8`
-   - Message your bot first to start a conversation
-   - Go to `/alerts` page and use the "Telegram Bot Test" panel
-   - Get your chat ID and add it to `.env.local` as `TELEGRAM_CHAT_ID`
-   - Real-time HOT token alerts will be sent automatically!
+## Tech Stack
 
-2. **Email Alerts**:
-   - Enter your email on the `/alerts` page
-   - Email integration requires additional setup (SendGrid, AWS SES, etc.)
+- [Next.js 15](https://nextjs.org) (App Router)
+- [Birdeye API](https://birdeye.so) — token data, prices, security
+- [Helius RPC](https://helius.dev) — Solana wallet token fetching
+- [Telegram Bot API](https://core.telegram.org/bots/api) — alert delivery
+- TypeScript, Tailwind CSS
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/Madubuezejoshua/birdeye-project.git
+cd birdeye-project
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Set up environment variables
+
+Create a `.env.local` file in the root:
+
+```env
+# Birdeye API — get yours at https://birdeye.so
+BIRDEYE_API_KEY=your_birdeye_api_key
+
+# Helius RPC — get yours at https://helius.dev
+HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_helius_api_key
+
+# Telegram Bot — see SETUP.md for full instructions
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_numeric_chat_id
+```
+
+### 4. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Telegram Alerts Setup
 
-## Learn More
+See [SETUP.md](./SETUP.md) for the full step-by-step guide to creating your Telegram bot and getting your chat ID.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/
+  page.tsx              # Main dashboard
+  alerts/page.tsx       # Live alerts tab
+  wallet/page.tsx       # Wallet analyzer
+  token/[address]/      # Token detail page
+  api/                  # All API routes
 
-## Deploy on Vercel
+components/             # UI components
+lib/                    # Core logic (Birdeye, RPC, alerts engine)
+types/                  # TypeScript types
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Deploy instantly on [Vercel](https://vercel.com):
+
+1. Push to GitHub
+2. Import the repo on Vercel
+3. Add your environment variables in the Vercel dashboard
+4. Deploy
+
+---
+
+## Author
+
+**madubuezejoshua** — [madubuezejoshua0@gmail.com](mailto:madubuezejoshua0@gmail.com)  
+GitHub: [Madubuezejoshua](https://github.com/Madubuezejoshua)
