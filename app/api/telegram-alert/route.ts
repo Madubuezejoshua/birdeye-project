@@ -40,10 +40,25 @@ export async function POST(req: Request) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Telegram API error:", errorText);
-      return NextResponse.json(
-        { error: "Failed to send Telegram message" },
-        { status: 500 }
-      );
+      // Try again without parse_mode in case of HTML formatting error
+      const retry = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: targetChatId,
+          text: message,
+        }),
+      });
+      if (!retry.ok) {
+        const retryError = await retry.text();
+        console.error("Telegram retry error:", retryError);
+        return NextResponse.json(
+          { error: "Failed to send Telegram message" },
+          { status: 500 }
+        );
+      }
+      const retryResult = await retry.json();
+      return NextResponse.json({ success: true, result: retryResult });
     }
 
     const result = await response.json();

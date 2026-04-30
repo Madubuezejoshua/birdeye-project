@@ -5,7 +5,7 @@ import { Send, TestTube, CheckCircle } from "lucide-react";
 
 export default function TelegramTestPanel() {
   const [chatId, setChatId] = useState("");
-  const [testMessage, setTestMessage] = useState("🔥 Test HOT Token Alert\n\nThis is a test message from your Birdeye Intelligence Dashboard!");
+  const [testMessage, setTestMessage] = useState("🔥 Test HOT Token Alert - This is a test message from your Birdeye Intelligence Dashboard!");
   const [isSending, setIsSending] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
 
