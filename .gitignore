@@ -42,3 +42,6 @@ next-env.d.ts
 
 # API counter persistence file
 .api-counter.json
+
+# API counter route (internal tracking only)
+app/api/counter/
