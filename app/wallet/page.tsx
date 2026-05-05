@@ -3,7 +3,7 @@ import { useState } from "react";
 import WalletInsights from "@/components/WalletInsights";
 import Loader from "@/components/Loader";
 import { formatNumber, shortenAddress } from "@/lib/utils";
-import { Wallet, Search, ExternalLink, TrendingUp, AlertTriangle, DollarSign, Bug } from "lucide-react";
+import { Wallet, Search, ExternalLink, TrendingUp, AlertTriangle, DollarSign, Bug, Trophy } from "lucide-react";
 import Link from "next/link";
 
 interface EnrichedToken {
@@ -294,6 +294,21 @@ export default function WalletPage() {
             Try: 9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM
           </p>
         </div>
+      )}
+
+      {/* Rewards CTA — shown after analysis */}
+      {result && !loading && (
+        <Link href="/rewards" className="block">
+          <div className="bg-gradient-to-r from-yellow-500/10 to-green-500/10 border border-yellow-500/20 rounded-xl p-4 flex items-center justify-between hover:border-yellow-500/40 transition-colors cursor-pointer">
+            <div className="flex items-center gap-3">
+              <Trophy className="w-5 h-5 text-yellow-400 shrink-0" />
+              <div>
+                <div className="text-white text-sm font-medium">Activity tracked for Upsite Rewards</div>
+                <div className="text-gray-500 text-xs mt-0.5">Check the leaderboard to see your rank →</div>
+              </div>
+            </div>
+          </div>
+        </Link>
       )}
     </div>
   );

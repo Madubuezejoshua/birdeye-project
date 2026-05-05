@@ -74,11 +74,11 @@ export default async function DashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Activity className="w-6 h-6 text-cyan-400" />
-          Market Overview
+          <Activity className="w-6 h-6 text-green-400" />
+          Market Intelligence
         </h1>
         <p className="text-gray-500 text-sm mt-1">
-          Real-time crypto intelligence powered by Birdeye
+          Real-time Solana signals powered by Birdeye — updated every 30s
         </p>
       </div>
 
@@ -155,16 +155,16 @@ export default async function DashboardPage() {
       </section>
 
       {/* Wallet CTA */}
-      <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-green-500/10 to-cyan-500/10 border border-green-500/20 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h3 className="text-white font-semibold">Analyze your wallet</h3>
           <p className="text-gray-400 text-sm mt-0.5">
-            Get risk scores, exposure analysis, and smart suggestions
+            Get risk scores, exposure analysis, smart suggestions, and earn Upsite rewards
           </p>
         </div>
         <Link
           href="/wallet"
-          className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition-colors text-sm whitespace-nowrap"
+          className="px-5 py-2.5 bg-green-500 hover:bg-green-400 text-black font-semibold rounded-lg transition-colors text-sm whitespace-nowrap"
         >
           Open Wallet Analyzer →
         </Link>

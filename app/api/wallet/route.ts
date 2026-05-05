@@ -3,6 +3,7 @@ import { getWalletTokens, getSolBalance } from "@/lib/solanaWallet";
 import { enrichTokensBatch, type EnrichedToken } from "@/lib/birdeyeEnrich";
 import { validateSolanaAddress } from "@/lib/normalizeWallet";
 import { sendTelegramMessage, formatWalletRiskAlert } from "@/lib/telegram-alerts";
+import { trackWalletActivity } from "@/lib/torque";
 
 // Wrapped SOL mint address
 const WSOL_MINT = "So11111111111111111111111111111111111111112";
@@ -155,6 +156,10 @@ export async function POST(req: Request) {
       const riskySymbols = riskyTokens.map((t) => t.symbol).filter(Boolean);
       sendTelegramMessage(formatWalletRiskAlert(address, riskScore, riskySymbols)).catch(() => {});
     }
+
+    // Track wallet activity in Torque for rewards (non-blocking)
+    const activityType = trendingTokens.length > 0 ? "swap" : "hold";
+    trackWalletActivity(address, activityType, totalTokens, totalValue).catch(() => {});
 
     const top3 = tokensWithHeat.slice(0, 3).map((t) => ({
       symbol: t.symbol || t.mint.slice(0, 6),
